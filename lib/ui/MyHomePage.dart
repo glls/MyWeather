@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_weather_app/api/MapApi.dart';
 import 'package:my_weather_app/model/WeatherData.dart';
 import 'package:my_weather_app/ui/Weather.dart';
+import 'package:location/location.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -23,12 +24,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   WeatherData _weatherData;
+  LocationData _currentLocation;
 
   @override
   void initState() {
     super.initState();
+
     getCurrentLocation();
   }
+
+  Location _locationService = new Location();
+  bool _permission = false;
+  String error;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +60,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  getCurrentLocation() {
+  getCurrentLocation() async {
+
+    // copy implementation from
+    // https://github.com/Lyokone/flutterlocation/blob/master/example/lib/main.dart
+
     loadWeather(lat: 40.71, lon: -74.01);
   }
 
