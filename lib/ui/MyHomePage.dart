@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_weather_app/api/MapApi.dart';
+import 'package:my_weather_app/model/WeatherData.dart';
 import 'package:my_weather_app/ui/Weather.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -16,27 +18,50 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() => new _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  WeatherData _weatherData;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentLocation();
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
+    return new Scaffold(
       backgroundColor: Colors.lightBlue,
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
-        ),
-        body:
-            Weather() // This trailing comma makes auto-formatting nicer for build methods.
+      appBar: new AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: new Text(widget.title),
+      ),
+      body: _weatherData != null
+          ? Weather(weatherData: _weatherData)
+          : Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 4.0,
+                valueColor: AlwaysStoppedAnimation(Colors.white),
+              ),
+            ),
     );
+  }
+
+  getCurrentLocation() {
+    loadWeather(lat: 40.71, lon: -74.01);
+  }
+
+  loadWeather({double lat, double lon}) async {
+    MapApi mapApi = MapApi.getInstance();
+    final data = await mapApi.getWeather(lat: lat, lon: lon);
+    setState(() {
+      this._weatherData = data;
+    });
   }
 }

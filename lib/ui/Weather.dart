@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_weather_app/model/WeatherData.dart';
 
 class Weather extends StatelessWidget {
+  final WeatherData weatherData;
+
+  Weather({@required this.weatherData});
+
   @override
   Widget build(BuildContext context) {
     Widget dateSection = Container(
       child: Text(
         DateFormat("MMMM d, HH:mm").format(DateTime.now()),
-//        DateFormat.yMMMMEEEEd().format(DateTime.now()),
         textAlign: TextAlign.center,
         style: TextStyle(
           fontWeight: FontWeight.bold,
           color: Colors.white,
-          fontSize: 20.0,
+          fontSize: 24.0,
         ),
       ),
     );
 
     Widget tempSection = Container(
-      padding: EdgeInsets.symmetric(vertical: 10.0),
+      padding: EdgeInsets.symmetric(
+        vertical: 10.0,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            '20',
+            weatherData.temp.toStringAsFixed(0),
             style: TextStyle(
               fontSize: 80.0,
             ),
@@ -44,8 +50,8 @@ class Weather extends StatelessWidget {
               ),
             ),
           ),
-          Image.asset(
-            'assets/img/cloudy.png',
+          Image.network(
+            'https://openweathermap.org/img/w/${weatherData.icon}.png',
             width: 100.0,
             height: 100.0,
             fit: BoxFit.cover,
@@ -55,27 +61,28 @@ class Weather extends StatelessWidget {
     );
 
     Widget descriptionSection = Container(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Tokyo',
-          style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            weatherData.name,
+            style: TextStyle(
+              fontSize: 24.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-        ),
-        Text(
-          'Cloudy',
-          style: TextStyle(
-            fontSize: 24.0,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    ));
+          Text(
+            weatherData.main,
+            style: TextStyle(
+              fontSize: 24.0,
+              color: Colors.white,
+            ),
+          )
+        ],
+      ),
+    );
 
     return Container(
       padding: const EdgeInsets.all(60.0),
