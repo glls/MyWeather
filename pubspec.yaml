@@ -41,7 +41,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/img/cloudy.png
+  - assets/img/cloudy.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
