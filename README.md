@@ -1,4 +1,4 @@
-# my_weather_app
+# MyWeather
 
 A weather application.
 
