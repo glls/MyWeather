@@ -1,21 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
+import 'package:flutter/services.dart';
+
 import 'package:my_weather_app/api/MapApi.dart';
 import 'package:my_weather_app/model/WeatherData.dart';
 import 'package:my_weather_app/ui/Weather.dart';
-import 'package:location/location.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -24,17 +18,68 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   WeatherData _weatherData;
+  Location _locationService = new Location();
+
   LocationData _currentLocation;
+
+  bool _permission = false;
+  StreamSubscription<LocationData> _locationSubscription;
 
   @override
   void initState() {
     super.initState();
 
-    getCurrentLocation();
+    initPlatformState();
   }
 
-  Location _locationService = new Location();
-  bool _permission = false;
+// Platform messages are asynchronous, so we initialize in an async method.
+  initPlatformState() async {
+    await _locationService.changeSettings(
+        accuracy: LocationAccuracy.HIGH, interval: 1000);
+
+    LocationData location;
+
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      bool serviceStatus = await _locationService.serviceEnabled();
+      print("Service status: $serviceStatus");
+      if (serviceStatus) {
+        _permission = await _locationService.requestPermission();
+        print("Permission: $_permission");
+        if (_permission) {
+          location = await _locationService.getLocation();
+
+          _locationSubscription = _locationService
+              .onLocationChanged()
+              .listen((LocationData result) async {
+            location = result;
+          });
+        }
+      } else {
+        bool serviceStatusResult = await _locationService.requestService();
+        print("Service status activated after request: $serviceStatusResult");
+        if (serviceStatusResult) {
+          initPlatformState();
+        }
+      }
+    } on PlatformException catch (e) {
+      print(e);
+      if (e.code == 'PERMISSION_DENIED') {
+        error = e.message;
+      } else if (e.code == 'SERVICE_STATUS_ERROR') {
+        error = e.message;
+      }
+      location = null;
+    }
+
+    setState(() {
+      _currentLocation = location;
+      loadWeather(
+          lat: _currentLocation.latitude, lon: _currentLocation.longitude);
+      //loadWeather(lat: 40.71, lon: -74.01); // test New York
+    });
+  }
+
   String error;
 
   @override
@@ -58,14 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
     );
-  }
-
-  getCurrentLocation() async {
-
-    // copy implementation from
-    // https://github.com/Lyokone/flutterlocation/blob/master/example/lib/main.dart
-
-    loadWeather(lat: 40.71, lon: -74.01);
   }
 
   loadWeather({double lat, double lon}) async {
