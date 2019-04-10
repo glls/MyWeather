@@ -1,6 +1,6 @@
 # MyWeather
 
-A weather application.
+A weather application written in flutter.
 
 Generate your API key for `_apiKey` in `MapApi.dart` from openweathermap here :
 https://home.openweathermap.org/api_keys
