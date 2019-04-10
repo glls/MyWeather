@@ -1,9 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:flutter/services.dart';
-
 import 'package:my_weather_app/api/MapApi.dart';
 import 'package:my_weather_app/model/WeatherData.dart';
 import 'package:my_weather_app/ui/Weather.dart';
