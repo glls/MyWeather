@@ -2,7 +2,10 @@
 
 A weather application.
 
-## Getting Started
+Generate your API key for `_apiKey` in `MapApi.dart` from openweathermap here :
+https://home.openweathermap.org/api_keys
+
+## Getting Started (with flutter)
 
 This project is a starting point for a Flutter application.
 
